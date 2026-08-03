@@ -1,0 +1,13 @@
+ice_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: spark
+      method: thrift
+      host: spark-iceberg
+      port: 10000
+      schema: silver     # default/fallback; models override via +schema
+      catalog: demo       # the Iceberg REST catalog registered in spark-defaults.conf
+      user: dbt
+      connect_retries: 5
+      connect_timeout: 10

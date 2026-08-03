@@ -1,0 +1,48 @@
+# ============================================================
+# Dockerfile - Airflow 3.0 Image (Optimized & Clean)
+# ============================================================
+
+FROM apache/airflow:3.0.5-python3.11
+
+USER root
+
+# Configure aggressive retries for apt to handle network drops
+RUN echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries
+
+# Install system libraries, system JRE 17, and procps (provides 'ps')
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    libsasl2-dev \
+    libssl-dev \
+    librdkafka-dev \
+    openjdk-17-jre-headless \
+    procps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set standard system Java environment variables globally
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+USER airflow
+
+# Copy requirements and install python dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Pre-install DuckDB's httpfs and parquet extensions at BUILD time, not
+# runtime. profiles.yml's `extensions: [httpfs, parquet]` causes dbt-duckdb
+# to INSTALL/LOAD these on every fresh connection (since path: ':memory:'
+# means a brand-new DuckDB instance per dbt invocation) -- and the deployed
+# container has no route to extensions.duckdb.org, only internal Docker
+# network access to MinIO/Kafka/Postgres. The build environment, unlike the
+# deployed container, typically does have internet access. Installing here
+# under the same `airflow` user (matching docker-compose.yml's
+# `user: "${AIRFLOW_UID:-50000}:0"`, which resolves to this same UID/HOME at
+# runtime) means DuckDB finds the extensions already cached under
+# ~/.duckdb/extensions and never attempts the download at all.
+RUN python -c "import duckdb; con = duckdb.connect(); con.execute('INSTALL httpfs'); con.execute('INSTALL parquet'); con.close()"
+
+WORKDIR /opt/airflow

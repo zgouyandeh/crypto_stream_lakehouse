@@ -1,0 +1,45 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.env
+.venv/
+venv/
+
+# Project‑specific Python virtualenv
+dashboard/venv/
+
+# === Draw.io (architecture source files) ===
+*.drawio
+*.drawio.bkp
+
+# === Plot folder (optional – uncomment if you want to exclude the entire folder) ===
+# Plot/
+
+# === Spark / Kafka / MinIO generated data & checkpoints ===
+checkpoints/
+spark-checkpoints/
+data/
+warehouse/
+minio-data/
+logs/
+ivy_cache/
+jars/
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Docker (keep docker-compose.yml, ignore runtime files if any) ===
+# (none typically needed – just ignore any container dumps)

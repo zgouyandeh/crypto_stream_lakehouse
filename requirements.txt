@@ -1,0 +1,43 @@
+# ------------------------------------------------------------
+# Airflow Providers (Pinned for compatibility with Airflow 3)
+# ------------------------------------------------------------
+apache-airflow-providers-amazon>=9.0.0
+apache-airflow-providers-common-io>=1.5.3
+apache-airflow-providers-apache-spark>=4.8.0
+
+# ------------------------------------------------------------
+# Spark Client (Required for PySpark operations & Submissions)
+# ------------------------------------------------------------
+pyspark==3.5.5
+
+# ------------------------------------------------------------
+# dbt (Runs natively inside Airflow for transformation DAGs)
+# ------------------------------------------------------------
+dbt-core==1.8.0
+# The DuckDB adapter is a separate package from dbt-core -- without it,
+# `dbt` fails at runtime with "No module named 'dbt.adapters.duckdb'" for
+# any profile with `type: duckdb`. 1.8.1 is the version explicitly built
+# to pair with dbt-core 1.8.x (per the dbt-duckdb PyPI page).
+dbt-duckdb==1.8.1
+
+# ------------------------------------------------------------
+# Python Kafka Client (For PythonOperator health checks)
+# ------------------------------------------------------------
+confluent-kafka==2.5.0
+
+# ------------------------------------------------------------
+# Database Driver (Production standard compiled postgres adapter)
+# ------------------------------------------------------------
+psycopg2==2.9.10
+# SQLAlchemy is required directly by export_all_to_postgres.py
+# (create_engine, pandas.to_sql) -- psycopg2 alone only provides the DB-API
+# driver, not the ORM/engine layer pandas.to_sql relies on.
+SQLAlchemy>=1.4.0,<2.0.0
+# ------------------------------------------------------------
+# Data Processing & S3/MinIO utilities
+# ------------------------------------------------------------
+numpy==1.26.4
+pandas==2.2.2
+pyarrow==17.0.0
+s3fs==2024.9.0
+boto3==1.35.0

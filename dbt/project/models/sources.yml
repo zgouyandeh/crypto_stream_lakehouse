@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: bronze
+    tables:
+      - name: orderbook_events
+        description: >
+          Raw level2 snapshot/l2update messages from Coinbase's order book
+          feed, landed append-only by bronze_stream.py. bids/asks/changes
+          arrays are kept as the original JSON string in `payload` since
+          their shape differs by message type -- flattened in silver.
+        columns:
+          - name: type
+          - name: product_id
+          - name: time
+          - name: sequence
+          - name: payload
+          - name: ingest_time
+
+      - name: trades
+        description: >
+          Raw "match" (executed trade) messages from Coinbase, landed
+          append-only and fully typed by bronze_stream.py.
+        columns:
+          - name: trade_id
+          - name: sequence
+          - name: product_id
+          - name: price
+          - name: size
+          - name: side
+          - name: time
+          - name: ingest_time
